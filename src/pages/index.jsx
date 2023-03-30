@@ -1,19 +1,14 @@
+import { signOut, getSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Cookies from "js-cookie";
 import Link from "next/link";
 
+
 import { AnimatePresence, motion } from "framer-motion";
 
-export default function Home() {
+export default function Home({ session }) {
   const router = useRouter();
-
-  const logout = () => {
-    Cookies.remove("id");
-    Cookies.remove("user");
-    Cookies.remove("money");
-    router.push("/login");
-  };
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [user, setUser] = useState({
@@ -46,7 +41,7 @@ export default function Home() {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {user.current.money} R$
+                {session.user.balance} R$
               </span>
             </div>
 
@@ -87,15 +82,15 @@ export default function Home() {
 
       <div className="flex gap-3">
         <div className="bg-white/40 w-[32px] h-[32px] rounded-full flex items-center justify-center text-sm ml-2">
-          {user.current.user[0]}
-          {user.current.user.split(" ").length > 1 &&
-            user.current.user.split(" ")[1][0]}
+          {session.user.username[0]}
+          {session.user.username.split(" ").length > 1 &&
+            session.user.username.split(" ")[1][0]}
         </div>
 
         <div className="grid gap-px">
-          <span className="text-xs text-white">{user.current.user}</span>
+          <span className="text-xs text-white">{session.user.username}</span>
           <div className="flex">
-            <span className="text-xs text-white/40">{user.current.id}</span>
+            <span className="text-xs text-white/40">{session.user.id}</span>
             <i className="bc-icon text-white/60 before:content-['\e9fd'] !text-xs -ml-1" />
           </div>
         </div>
@@ -235,7 +230,7 @@ export default function Home() {
       </AnimatePresence>
 
       <button
-        onClick={() => logout()}
+        onClick={() => signOut()}
         className="py-2.5 mt-1 text-xs text-white rounded bg-white/5"
       >
         SAIR
@@ -243,3 +238,20 @@ export default function Home() {
     </div>
   );
 }
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const session = await getSession({ req });
+
+  if (!session)
+    return {
+      redirect: { destination: "/auth/signin" },
+    };
+
+  return {
+    props: {
+      session: session,
+    },
+  };
+}
+

@@ -1,13 +1,17 @@
 import "@/styles/globals.css";
-import Head from "next/head";
+import { SessionProvider } from "next-auth/react";
 import { Layout } from "@/modules/layout/";
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
-      <Layout>
+    <SessionProvider session={pageProps.session}>
+      {pageProps.session ? (
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
+      ) : (
         <Component {...pageProps} />
-      </Layout>
-    </>
+      )}
+    </SessionProvider>
   );
 }

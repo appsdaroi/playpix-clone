@@ -1,9 +1,13 @@
+import { signOut, getSession } from "next-auth/react";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import { randomBetweenRange, randomDate } from "@/helpers/random";
+
+import _ from "lodash";
+import axios from "axios";
+import moment from "moment";
 
 import { Bet } from "@/modules/history/Bet";
-import moment from "moment";
 
 export default function Balance() {
   const router = useRouter();
@@ -11,19 +15,28 @@ export default function Balance() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    const generatedHistory = [];
-    for (let index = 0; index < randomBetweenRange(12, 20); index++) {
-      generatedHistory.push({
-        id: randomBetweenRange(1000000000, 9999999999),
-        date: randomDate(new Date(moment().subtract(4,'d').valueOf()), new Date(moment().valueOf())),
-        value: randomBetweenRange(500, 5000),
-        quotes: `${randomBetweenRange(1, 2)}.${randomBetweenRange(0, 99)}`,
-      });
-    }
+    const getExtracts = async () => {
+      const config = {
+        headers: {
+          "X-Master-Key":
+            "$2b$10$qo5bE7wh/z3fVPs.xyH6W.jly4sXaI7d3T3LoiqfYl8Rkw0U1JThi",
+        },
+      };
 
-    setHistory(() => {
-      return generatedHistory.sort((a,b) => b.date - a.date);
-    });
+      const res = await axios.get(
+        "https://api.jsonbin.io/v3/b/64253696ebd26539d0a03f1f",
+        config
+      );
+
+      const thisUserHistory = _.find(
+        res.data.record.extracts,
+        (user) => user.id === session.user.id
+      );
+
+      console.log(thisUserHistory);
+    };
+
+    getExtracts();
   }, []);
 
   return (
@@ -76,4 +89,20 @@ export default function Balance() {
       </div>
     </div>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { req } = context;
+  const session = await getSession({ req });
+
+  if (!session)
+    return {
+      redirect: { destination: "/auth/signin" },
+    };
+
+  return {
+    props: {
+      session: session,
+    },
+  };
 }
