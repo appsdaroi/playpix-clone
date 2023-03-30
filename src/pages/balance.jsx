@@ -9,7 +9,7 @@ import moment from "moment";
 
 import { Bet } from "@/modules/history/Bet";
 
-export default function Balance() {
+export default function Balance({ session }) {
   const router = useRouter();
 
   const [history, setHistory] = useState([]);
@@ -33,7 +33,7 @@ export default function Balance() {
         (user) => user.id === session.user.id
       );
 
-      console.log(thisUserHistory);
+      setHistory(thisUserHistory.list);
     };
 
     getExtracts();
@@ -46,7 +46,7 @@ export default function Balance() {
         className="bc-icon text-white before:content-['\e956'] -ml-2"
       />
 
-      <div className="flex gap-2 mb-1 -mr-2 overflow-x-hiddend flex-nowrap h-[145px]">
+      <div className="flex gap-2 mb-1 -mr-2 overflow-x-hiddend flex-nowrap">
         <div className="tracking-widest px-5 py-[0.44rem] text-xs text-white text-[10px] bg-[linear-gradient(to_bottom,_#4A94FD,_#1074D0)] rounded-[6px]">
           TODOS
         </div>

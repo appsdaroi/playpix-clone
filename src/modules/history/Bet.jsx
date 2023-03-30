@@ -1,7 +1,10 @@
 import moment from "moment";
+import "moment/locale/pt-br";
+
 
 const Bet = ({ props }) => {
   const { id, date, value, quotes } = props;
+  moment.locale("pt-br");
 
   return (
     <div className="grid gap-3 px-3 py-2 rounded bg-white/10">
@@ -19,7 +22,7 @@ const Bet = ({ props }) => {
         <div className="grid ml-auto text-right">
           <span className="text-xs font-light text-green-500">RESOLVIDO</span>
           <span className="text-white/75 text-[11px]">
-            {moment(date).format("DD.MM.YYYY")}, {moment(date).format("HH:MM")}
+            {moment(date*1000).format("DD.MM.YYYY")}, {moment(date*1000).format("HH:MM")}
           </span>
         </div>
       </div>
