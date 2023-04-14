@@ -3,7 +3,7 @@ import "moment/locale/pt-br";
 
 
 const Bet = ({ props }) => {
-  const { id, date, value, quotes } = props;
+  const { id, created_at, value, quotes } = props;
   moment.locale("pt-br");
 
   return (
@@ -22,7 +22,7 @@ const Bet = ({ props }) => {
         <div className="grid ml-auto text-right">
           <span className="text-xs font-light text-green-500">RESOLVIDO</span>
           <span className="text-white/75 text-[11px]">
-            {moment(date*1000).format("DD.MM.YYYY")}, {moment(date*1000).format("HH:MM")}
+            {moment(created_at).format("DD.MM.YYYY")}, {moment(created_at).format("HH:MM")}
           </span>
         </div>
       </div>
