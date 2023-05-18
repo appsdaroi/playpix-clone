@@ -98,7 +98,7 @@ export default function Home({ session }) {
         <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
       </div>
 
-      <div className="flex items-center gap-3 -mt-1">
+      <div className="flex items-center gap-3 -mt-4">
         <i className="bc-icon text-[#4A94FD] before:content-['\e9fa'] !w-[21px] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-sm" />
 
         <span className="text-[14px] text-white ">Verificação</span>
@@ -106,16 +106,16 @@ export default function Home({ session }) {
         <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
       </div>
 
-      <hr className="h-px mt-3 mb-1 border-white/50" />
+      <hr className="h-px mb-1 border-white/50" />
 
       <AnimatePresence>
         {!menuOpen ? (
           <ul className="grid gap-px">
             <button
               onClick={() => setMenuOpen(true)}
-              className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] rounded-t"
+              className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] rounded-t h-[42px]"
             >
-              <i className="bc-icon text-white before:content-['\e90b'] !w-6 !text-[18px] -mt-px" />
+              <i className="bc-icon menu-icon text-white before:content-['\e90b'] bg-[#9ce8bb]" />
 
               <span className="text-white text-[15px]">
                 Histórico de apostas
@@ -124,8 +124,8 @@ export default function Home({ session }) {
               <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
             </button>
 
-            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]">
-              <i className="bc-icon text-white before:content-['\eaaf'] !w-6 !text-[18px] -mt-px" />
+            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px]">
+              <i className="bc-icon menu-icon text-white before:content-['\eaaf'] -mt-px bg-[#6585a1]" />
 
               <span className="text-white text-[15px]">
                 Histórico do Construtor de Aposta
@@ -134,24 +134,24 @@ export default function Home({ session }) {
               <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
             </li>
 
-            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]">
-              <i className="bc-icon text-white before:content-['\e92d'] !w-6 !text-[18px] -mt-px" />
+            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px]">
+              <i className="bc-icon menu-icon text-white before:content-['\e92d'] -mt-px bg-[#38b838]" />
 
               <span className="text-white text-[15px]">Gestão do saldo</span>
 
               <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
             </li>
 
-            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]">
-              <i className="bc-icon text-white before:content-['\e94f'] !w-6 !text-[18px] -mt-px" />
+            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px]">
+              <i className="bc-icon menu-icon text-white before:content-['\e94f'] -mt-px bg-[#f7ff2b]" />
 
               <span className="text-white text-[15px]">Bônus</span>
 
               <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
             </li>
 
-            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] rounded-b">
-              <i className="bc-icon text-white before:content-['\e919'] !w-6 !text-[18px] -mt-px" />
+            <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px] rounded-b">
+              <i className="bc-icon menu-icon text-white before:content-['\e919'] -mt-px bg-[#8b928b]" />
 
               <span className="text-white text-[15px]">Meu Perfil</span>
 
@@ -186,39 +186,39 @@ export default function Home({ session }) {
                 preserveState
                 className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]"
               >
-                <i className="bc-icon text-white before:content-['\e9c3'] !w-6 !text-[18px] -mt-px" />
+                <i className="bc-icon menu-icon text-white before:content-['\e9c3'] !text-[18px] -mt-px bg-[#6585a1]" />
 
                 <span className="text-white text-[15px]">Todos</span>
 
                 <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
               </Link>
 
-              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]">
-                <i className="bc-icon text-white before:content-['\e9c2'] !w-6 !text-[18px] -mt-px" />
+              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px]">
+                <i className="bc-icon menu-icon text-white before:content-['\e9c2'] !text-[18px] -mt-px bg-[#6585a1]" />
 
                 <span className="text-white text-[15px]">Apostas abertas</span>
 
                 <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
               </li>
 
-              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)]">
-                <i className="bc-icon text-white before:content-['\e95f'] !w-6 !text-[18px] -mt-px" />
+              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px]">
+                <i className="bc-icon menu-icon text-white before:content-['\e95f'] !text-[18px] -mt-px bg-[#6585a1]" />
 
                 <span className="text-white text-[15px]">Retirado</span>
 
                 <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
               </li>
 
-              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] rounded-b">
-                <i className="bc-icon text-white before:content-['\e95e'] !w-6 !text-[18px] -mt-px" />
+              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px] rounded-b">
+                <i className="bc-icon menu-icon text-white before:content-['\e95e'] !text-[18px] -mt-px bg-[#6585a1]" />
 
                 <span className="text-white text-[15px]">Ganhou</span>
 
                 <i className="bc-icon text-white/60 before:content-['\e315'] relative before:absolute before:top-1/2 before:-translate-y-1/2 before:left-2 !text-xs ml-auto" />
               </li>
 
-              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] rounded-b">
-                <i className="bc-icon text-white before:content-['\e95d'] !w-6 !text-[18px] -mt-px" />
+              <li className="flex items-center gap-3 py-1 pl-3 bg-[rgba(255,255,255,0.15)] h-[42px] rounded-b">
+                <i className="bc-icon menu-icon text-white before:content-['\e95d'] !text-[18px] -mt-px bg-[#6585a1]" />
 
                 <span className="text-white text-[15px]">Perdido</span>
 
