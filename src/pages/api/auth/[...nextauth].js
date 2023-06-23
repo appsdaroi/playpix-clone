@@ -21,25 +21,6 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        // const config = {
-        //   headers: {
-        //     "X-Master-Key":
-        //       "$2b$10$qo5bE7wh/z3fVPs.xyH6W.jly4sXaI7d3T3LoiqfYl8Rkw0U1JThi",
-        //   },
-        // };
-
-        // const db = await axios.get(
-        //   "https://api.jsonbin.io/v3/b/642532e6ace6f33a220068d4",
-        //   config
-        // );
-
-        // const dbUser = _.find(
-        //   db.data.record.users,
-        //   (user) =>
-        //     user.username === credentials.username &&
-        //     user.password === credentials.password
-        // );
-
         const response = await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/api/login`,
           {
