@@ -1,16 +1,14 @@
 import { signOut, getSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
-import Cookies from "js-cookie";
 import Link from "next/link";
 
 
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Home({ session }) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
-
-  console.log(session)
 
   return (
     <div className="grid gap-2.5 mt-2">
@@ -35,7 +33,8 @@ export default function Home({ session }) {
             <div className="text-white text-sm font-medium text-center px-4 py-1.5 bg-[hsla(0,0%,100%,.25)] rounded">
               DEPOSITAR
             </div>
-            <div className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center">
+
+            <div onClick={() => router.push("/withdraw")} className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center">
               <i className="-ml-1 bc-icon !text-[18px] text-white before:content-['\e9ce']" />{" "}
               RETIRAR
             </div>
