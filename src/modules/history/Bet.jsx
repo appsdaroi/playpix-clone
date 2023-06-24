@@ -3,7 +3,7 @@ import "moment/locale/pt-br";
 
 
 const Bet = ({ props }) => {
-  const { id, created_at, value, quotes } = props;
+  const { id, date, value, quotes } = props;
   moment.locale("pt-br");
 
   return (
@@ -22,7 +22,7 @@ const Bet = ({ props }) => {
         <div className="grid ml-auto text-right">
           <span className="text-xs font-light text-green-500">RESOLVIDO</span>
           <span className="text-white/75 text-[11px]">
-            {moment(created_at).format("DD.MM.YYYY")}, {moment(created_at).format("HH:MM")}
+            {moment(date).format("DD.MM.YYYY")}, {moment(date).format("HH:MM")}
           </span>
         </div>
       </div>
@@ -38,7 +38,7 @@ const Bet = ({ props }) => {
         </div>
 
         <div className="grid ml-auto text-right">
-          <span className="text-white text-[11px]">{value} R$</span>
+          <span className="text-white text-[11px]">{(value / 10000).toFixed(2)} R$</span>
           <span className="text-green-500 text-[11px]">{quotes}</span>
         </div>
       </div>
@@ -48,7 +48,7 @@ const Bet = ({ props }) => {
       <div className="flex items-center justify-between">
         <span className="text-xs font-light text-white">Ganho</span>
         <span className="font-medium text-white">
-          {(value * parseFloat(quotes)).toFixed(2)} R$
+          {((value * parseFloat(quotes))/ 10000).toFixed(2)} R$
         </span>
       </div>
 

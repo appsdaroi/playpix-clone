@@ -22,7 +22,7 @@ export default function Home({ session }) {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {session.session.user.balance} R$
+                {(session.session.user.balance / 10000).toFixed(2)} R$
               </span>
             </div>
 

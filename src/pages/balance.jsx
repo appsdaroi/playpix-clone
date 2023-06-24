@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 
 import _ from "lodash";
-import axios from "axios";
 import moment from "moment";
+
+import { FetchWithToken } from "@/utils/fetch";
 
 import { Bet } from "@/modules/history/Bet";
 
