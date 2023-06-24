@@ -24,7 +24,7 @@ const Layout = ({ children }) => {
         </div>
       </nav>
 
-      <main className={`${montserrat.className} flex-1 bg-[#080d1c] px-2 h-full`}>{children}</main>
+      <main className={`${montserrat.className} flex-1 bg-[#080d1c] px-2 h-full relative`}>{children}</main>
     </div>
   );
 };
