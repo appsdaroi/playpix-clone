@@ -16,9 +16,10 @@ export default function Balance({ session }) {
 
   useEffect(() => {
     const getExtracts = async () => { 
-      const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/playpix/${session.user.id}/extracts`
-      );
+      const res = await FetchWithToken({
+        path: `playpix/${session.user.id}/extracts`,
+        method: "POST",
+      });
 
 
       setHistory(res.data.response);
