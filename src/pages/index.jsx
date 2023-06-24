@@ -11,6 +11,7 @@ export default function Home({ session }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   console.log(session)
+  return
 
   return (
     <div className="grid gap-2.5 mt-2">
