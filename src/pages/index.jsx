@@ -11,7 +11,6 @@ export default function Home({ session }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   console.log(session)
-  return
 
   return (
     <div className="grid gap-2.5 mt-2">
@@ -23,7 +22,7 @@ export default function Home({ session }) {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {session.user.balance} R$
+                {session.session.user.balance} R$
               </span>
             </div>
 
@@ -64,15 +63,15 @@ export default function Home({ session }) {
 
       <div className="flex gap-3">
         <div className="bg-white/40 w-[32px] h-[32px] rounded-full flex items-center justify-center text-sm ml-2">
-          {session.user.username[0]}
-          {session.user.username.split(" ").length > 1 &&
-            session.user.username.split(" ")[1][0]}
+          {session.session.user.username[0]}
+          {session.session.user.username.split(" ").length > 1 &&
+            session.session.user.username.split(" ")[1][0]}
         </div>
 
         <div className="grid gap-px">
-          <span className="text-xs text-white">{session.user.username}</span>
+          <span className="text-xs text-white">{session.session.user.username}</span>
           <div className="flex">
-            <span className="text-xs text-white/40">{session.user.id}</span>
+            <span className="text-xs text-white/40">{session.session.user.id}</span>
             <i className="bc-icon text-white/60 before:content-['\e9fd'] !text-xs -ml-1" />
           </div>
         </div>
