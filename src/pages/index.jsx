@@ -22,7 +22,7 @@ export default function Home({ session }) {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {session.user.money} R$
+                {session.user.balance} R$
               </span>
             </div>
 
