@@ -10,6 +10,8 @@ import { AnimatePresence, motion } from "framer-motion";
 export default function Home({ session }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  console.log(session)
+
   return (
     <div className="grid gap-2.5 mt-2">
       <div className="relative flex overflow-x-hidden">

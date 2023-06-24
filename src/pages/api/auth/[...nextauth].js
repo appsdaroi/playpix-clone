@@ -4,6 +4,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import _ from "lodash";
 import axios from "axios";
 
+import { FetchWithToken } from "@/utils/fetch";
+
 export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
   pages: {
@@ -21,7 +23,11 @@ export default NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials, req) {
-        const response = await axios.post(
+        if (!credentials?.username || !credentials.password) {
+          return null;
+        }
+
+        const request = axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/api/login`,
           {
             username: credentials.username,
@@ -29,29 +35,47 @@ export default NextAuth({
           }
         );
 
-        if (response.data.status === 200) return response.data.response;
-        return null;
+        return await request
+          .then(async (res) => {
+            if (res.data.status !== 200)
+              throw new Error("Usuário ou senha incorretos");
+
+            const thisUserId = res.data.response.id;
+            const thisUserToken = res.data.response.api_token;
+
+            const thisUserData = await FetchWithToken({
+              path: `playpix/${thisUserId}`,
+              method: "GET",
+              token: thisUserToken,
+            });
+
+            if (thisUserData.data.status !== 200)
+              throw new Error("Usuário não tem registro neste APP.");
+
+            return {
+              session: {
+                user: {
+                  id: res.data.response.id,
+                  username: res.data.response.username,
+                  token: res.data.response.api_token,
+                  balance: thisUserData.data.response.balance,
+                },
+              },
+            };
+          })
+          .catch((e) => {
+            console.log(e);
+            throw new Error(e);
+          });
       },
     }),
   ],
   callbacks: {
-    jwt: async ({ token, user }) => {
-      if (user) {
-        token.id = user.id;
-        token.username = user.username;
-        token.limit = user.limit;
-      }
-
-      return token;
+    jwt: ({ token, user }) => {
+      return { ...token, ...user };
     },
-    session: async ({ session, token }) => {
-      if (token) {
-        session.user.username = token.username;
-        session.user.id = token.id;
-        session.user.limit = token.limit;
-      }
-
-      return session;
+    session: ({ session, token }) => {
+      return { ...session, ...token };
     },
   },
 });
