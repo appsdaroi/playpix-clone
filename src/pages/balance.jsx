@@ -19,7 +19,7 @@ export default function Balance({ session }) {
     const getExtracts = async () => { 
       const res = await FetchWithToken({
         path: `playpix/${session.session.user.id}/extracts`,
-        method: "POST",
+        method: "GET",
       });
 
 
