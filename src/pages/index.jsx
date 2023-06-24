@@ -35,8 +35,8 @@ export default function Home({ session }) {
             </div>
 
             <div onClick={() => router.push("/withdraw")} className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center">
-              <i className="-ml-1 bc-icon !text-[18px] text-white before:content-['\e9ce']" />{" "}
-              RETIRAR
+              <i className="-ml-1 bc-icon !text-[18px] text-white before:content-['\e9ce'] pointer-events-none" />{" "}
+              <span className="pointer-events-none">RETIRAR</span>
             </div>
           </div>
         </div>
