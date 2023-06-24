@@ -15,29 +15,9 @@ export default function Balance({ session }) {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    const getExtracts = async () => {
-      // const config = {
-      //   headers: {
-      //     "X-Master-Key":
-      //       "$2b$10$qo5bE7wh/z3fVPs.xyH6W.jly4sXaI7d3T3LoiqfYl8Rkw0U1JThi",
-      //   },
-      // };
-
-      // const res = await axios.get(
-      //   "https://api.jsonbin.io/v3/b/64253696ebd26539d0a03f1f",
-      //   config
-      // );
-
-      // const thisUserHistory = _.find(
-      //   res.data.record.extracts,
-      //   (user) => user.id === session.user.id
-      // );
-  
+    const getExtracts = async () => { 
       const res = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/playpix/extracts`,
-        {
-          user_id: session.user.id
-        }
+        `${process.env.NEXT_PUBLIC_API_URL}/api/playpix/${session.user.id}/extracts`
       );
 
 

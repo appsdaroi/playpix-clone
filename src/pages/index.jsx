@@ -8,28 +8,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
 export default function Home({ session }) {
-  const router = useRouter();
-
   const [menuOpen, setMenuOpen] = useState(false);
-  const [user, setUser] = useState({
-    current: {
-      id: "",
-      user: "",
-      money: "",
-    },
-  });
-
-  useEffect(() => {
-    setUser(() => {
-      return {
-        current: {
-          id: Cookies.get("id"),
-          user: Cookies.get("user"),
-          money: Cookies.get("money"),
-        },
-      };
-    });
-  }, []);
 
   return (
     <div className="grid gap-2.5 mt-2">
@@ -41,7 +20,7 @@ export default function Home({ session }) {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {session.user.balance} R$
+                {session.user.money} R$
               </span>
             </div>
 
