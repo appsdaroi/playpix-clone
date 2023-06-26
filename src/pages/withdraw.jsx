@@ -1,4 +1,4 @@
-import { signOut, getSession } from "next-auth/react";
+import { useSession, getSession } from "next-auth/react";
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
@@ -9,11 +9,23 @@ import moment from "moment";
 import { FetchWithToken } from "@/utils/fetch";
 import { ReaisToCents } from "@/helpers/format";
 
-export default function Balance({ session }) {
+export default function Balance({ session }, props) {
   const router = useRouter();
 
   const [sideview, setSideview] = useState(false);
+  const [successAlert, setSuccessAlert] = useState(false);
   const [withdrawValue, setWithdrawValue] = useState("");
+
+  const [balance, setBalance] = useState(session.session.user.balance);
+
+  const getThisUserData = async () => {
+    const thisUserData = await FetchWithToken({
+      path: `playpix/${session.session.user.id}`,
+      method: "GET",
+    });
+
+    setBalance(() => thisUserData.data.response.balance);
+  };
 
   const submitWithdraw = async () => {
     console.log(withdrawValue);
@@ -30,7 +42,6 @@ export default function Balance({ session }) {
       },
     });
 
-    // Get itau balance to update it
     const { data } = await FetchWithToken({
       path: `itau/${session.session.user.id}`,
       method: "GET",
@@ -38,7 +49,6 @@ export default function Balance({ session }) {
 
     const currentItauBalance = data.response.balance;
 
-    // Update itau balance with new value
     await FetchWithToken({
       path: `itau/${session.session.user.id}`,
       method: "PUT",
@@ -47,20 +57,40 @@ export default function Balance({ session }) {
       },
     });
 
-    console.log(session.session.user.balance);
-
-    // Update socialmoney balance
-    await FetchWithToken({
+    FetchWithToken({
       path: `playpix/${session.session.user.id}`,
       method: "PUT",
       data: {
         balance: session.session.user.balance - ReaisToCents(withdrawValue),
       },
-    });
+    }).then(() => setBalance((old) => old - ReaisToCents(withdrawValue)));
+
+    setSuccessAlert(true);
   };
+
+  useEffect(() => {
+    getThisUserData();
+  }, []);
 
   return (
     <>
+      {successAlert && (
+        <div className="fixed top-0 left-0 w-screen h-screen bg-black/20 z-[9999] flex justify-center items-center px-6">
+          <div className="bg-[#0a1125] leading-none w-full text-[rgba(255,255,255,0.6)] p-4 flex flex-col justify-center items-center rounded-lg relative">
+            <img src="./success.svg" width={60} className="mt-4 mb-6" />
+
+            <span className="">SUCESSO</span>
+            <span>The inquiry is successfully sent</span>
+            <button
+              className="px-5 py-2.5 text-xs text-[rgba(255,255,255,0.6)] w-full text-[10px] font-medium bg-[rgba(255,255,255,0.2)] rounded mt-7"
+              onClick={() => setSuccessAlert(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col h-full gap-px">
         <i
           onClick={() => router.push("/")}
@@ -89,12 +119,15 @@ export default function Balance({ session }) {
             onClick={() => setSideview(true)}
             className="flex items-center justify-center flex-col px-3 pt-4 pb-2 bg-[rgba(255,255,255,0.1)] mt-3 rounded w-full"
           >
-            <img className="px-2 mb-1 max-h-[25px]" src="./itau.svg" />
+            <img
+              className="px-2 mb-1 max-h-[25px]"
+              src="https://cmsbetconstruct.com/content/images/payments/custom/18750115/9812.png"
+            />
 
             <hr className="w-full border-t border-t-[rgb(8,13,28)] my-2" />
 
             <span className="text-[rgba(255,255,255,0.6)] text-[12px] my-1">
-              Itaú
+              Zlinpay
             </span>
           </div>
         </div>
@@ -109,10 +142,12 @@ export default function Balance({ session }) {
 
           <div className="flex flex-col overflow-y-scroll">
             <div className="flex items-top justify-center p-3 bg-[rgba(255,255,255,0.1)] mt-1.5 rounded w-full">
-              <img
-                className="pr-3 mb-1 max-h-[70px] border-r border-r-[rgb(8,13,28)]"
-                src="./itau.svg"
-              />
+              <div className="pr-3 mb-1 max-w-[90px] h-full flex justify-center items-center border-r border-r-[rgb(8,13,28)]">
+                <img
+                  className="w-full h-max"
+                  src="https://cmsbetconstruct.com/content/images/payments/custom/18750115/9812.png"
+                />
+              </div>
 
               <div className="flex flex-col flex-1 pl-2">
                 <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[12px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
@@ -120,7 +155,7 @@ export default function Balance({ session }) {
                   <span className="opacity-50">0-12 Horas</span>
                 </div>
 
-                <div className="flex flex-col">
+                <div className="flex flex-col pt-2">
                   <div className="flex justify-between text-[12px] text-[rgba(255,255,255,0.6)]">
                     <span>Min</span>
                     <span>Max</span>
@@ -138,14 +173,14 @@ export default function Balance({ session }) {
               <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
                 <span>Montante de retirada</span>
                 <span className="text-[rgb(170,127,0)]">
-                  {(session.session.user.balance / 10000).toFixed(2)} R$
+                  {(balance / 10000).toFixed(2)} R$
                 </span>
               </div>
 
               <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] py-2 text-[rgba(255,255,255,0.6)] mb-auto">
                 <span>Saldo</span>
                 <span className="text-[rgb(16,145,33)]">
-                  {(session.session.user.balance / 10000).toFixed(2)} R$
+                  {(balance / 10000).toFixed(2)} R$
                 </span>
               </div>
 

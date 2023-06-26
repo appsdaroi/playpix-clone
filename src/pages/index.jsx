@@ -3,12 +3,27 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 
-
 import { AnimatePresence, motion } from "framer-motion";
+import { FetchWithToken } from "@/utils/fetch";
 
 export default function Home({ session }) {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const [balance, setBalance] = useState(session.session.user.balance);
+
+  const getThisUserData = async () => {
+    const thisUserData = await FetchWithToken({
+      path: `playpix/${session.session.user.id}`,
+      method: "GET",
+    });
+
+    setBalance(() => thisUserData.data.response.balance);
+  };
+
+  useEffect(() => {
+    getThisUserData();
+  }, []);
 
   return (
     <div className="grid gap-2.5 mt-2">
@@ -20,7 +35,7 @@ export default function Home({ session }) {
                 Saldo principal
               </span>
               <span className="text-xl font-bold leading-1">
-                {(session.session.user.balance / 10000).toFixed(2)} R$
+                {(balance / 10000).toFixed(2)} R$
               </span>
             </div>
 
@@ -34,7 +49,10 @@ export default function Home({ session }) {
               DEPOSITAR
             </div>
 
-            <div onClick={() => router.push("/withdraw")} className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center">
+            <div
+              onClick={() => router.push("/withdraw")}
+              className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center"
+            >
               <i className="-ml-1 bc-icon !text-[18px] text-white before:content-['\e9ce']" />{" "}
               <span>RETIRAR</span>
             </div>
@@ -68,9 +86,13 @@ export default function Home({ session }) {
         </div>
 
         <div className="grid gap-px">
-          <span className="text-xs text-white">{session.session.user.username}</span>
+          <span className="text-xs text-white">
+            {session.session.user.username}
+          </span>
           <div className="flex">
-            <span className="text-xs text-white/40">{session.session.user.id}</span>
+            <span className="text-xs text-white/40">
+              {session.session.user.id}
+            </span>
             <i className="bc-icon text-white/60 before:content-['\e9fd'] !text-xs -ml-1" />
           </div>
         </div>
@@ -156,7 +178,7 @@ export default function Home({ session }) {
               initial={{ x: "-100%" }}
               animate={{ x: "0" }}
               transition={{
-                duration: .177,
+                duration: 0.177,
                 ease: "linear",
               }}
               className="grid gap-px"
@@ -234,4 +256,3 @@ export async function getServerSideProps(context) {
     },
   };
 }
-

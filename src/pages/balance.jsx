@@ -22,7 +22,6 @@ export default function Balance({ session }) {
         method: "GET",
       });
 
-
       setHistory(res.data.response);
     };
 
