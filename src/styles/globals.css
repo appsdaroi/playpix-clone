@@ -10,6 +10,14 @@
     font-display: block
 }
 
+* {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.notification * {
+    font-family: 'Inter', sans-serif !important;
+}
+
 .bc-icon {
     font-family: "BetConstruct-Icons" !important;
     font-style: normal;

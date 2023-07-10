@@ -6,15 +6,20 @@ import { useRouter } from "next/router";
 import _ from "lodash";
 import moment from "moment";
 
+import { AnimatePresence, motion } from "framer-motion";
 import { FetchWithToken } from "@/utils/fetch";
 import { ReaisToCents } from "@/helpers/format";
 
-export default function Balance({ session }, props) {
+import { Notify } from "@/modules/notifications";
+
+export default function Balance({ session }) {
   const router = useRouter();
+  const { update } = useSession();
 
   const [sideview, setSideview] = useState(false);
   const [successAlert, setSuccessAlert] = useState(false);
   const [withdrawValue, setWithdrawValue] = useState("");
+  const [bankNotification, setBankNotification] = useState(false);
 
   const [balance, setBalance] = useState(session.session.user.balance);
 
@@ -24,15 +29,22 @@ export default function Balance({ session }, props) {
       method: "GET",
     });
 
-    setBalance(() => thisUserData.data.response.balance);
+    setBalance(() => thisUserData.data.response.user.balance);
+
+    if (thisUserData.data.response.user.balance != session.session.user.balance)
+      update({ balance: thisUserData.data.response.user.balance });
   };
 
   const submitWithdraw = async () => {
-    console.log(withdrawValue);
+    setSuccessAlert(true);
 
-    // Add to itau extracts
+    setTimeout(() => {
+      setBankNotification(true);
+    }, 1000);
+
+    // Add to bank extracts
     await FetchWithToken({
-      path: `itau/${session.session.user.id}/extracts`,
+      path: `${session.session.user.bank}/${session.session.user.id}/extracts`,
       method: "POST",
       data: {
         value: ReaisToCents(withdrawValue),
@@ -43,17 +55,17 @@ export default function Balance({ session }, props) {
     });
 
     const { data } = await FetchWithToken({
-      path: `itau/${session.session.user.id}`,
+      path: `${session.session.user.bank}/${session.session.user.id}`,
       method: "GET",
     });
 
-    const currentItauBalance = data.response.balance;
+    const currentBankBalance = data.response.balance;
 
     await FetchWithToken({
-      path: `itau/${session.session.user.id}`,
+      path: `${session.session.user.bank}/${session.session.user.id}`,
       method: "PUT",
       data: {
-        balance: currentItauBalance + ReaisToCents(withdrawValue),
+        balance: currentBankBalance + ReaisToCents(withdrawValue),
       },
     });
 
@@ -64,8 +76,6 @@ export default function Balance({ session }, props) {
         balance: session.session.user.balance - ReaisToCents(withdrawValue),
       },
     }).then(() => setBalance((old) => old - ReaisToCents(withdrawValue)));
-
-    setSuccessAlert(true);
   };
 
   useEffect(() => {
@@ -74,12 +84,22 @@ export default function Balance({ session }, props) {
 
   return (
     <>
+      <AnimatePresence>
+        {bankNotification && (
+          <Notify
+            value={withdrawValue}
+            bank={session?.session.user.bank}
+            setNotificationVisible={setBankNotification}
+          />
+        )}
+      </AnimatePresence>
+
       {successAlert && (
-        <div className="fixed top-0 left-0 w-screen h-screen bg-black/20 z-[9999] flex justify-center items-center px-6">
+        <div className="fixed top-0 left-0 z-40 flex items-center justify-center w-screen h-screen px-6 bg-black/20">
           <div className="bg-[#0a1125] leading-none w-full text-[rgba(255,255,255,0.6)] p-4 flex flex-col justify-center items-center rounded-lg relative">
             <img src="./success.svg" width={60} className="mt-4 mb-6" />
 
-            <span className="">SUCESSO</span>
+            <span>SUCESSO</span>
             <span>The inquiry is successfully sent</span>
             <button
               className="px-5 py-2.5 text-xs text-[rgba(255,255,255,0.6)] w-full text-[10px] font-medium bg-[rgba(255,255,255,0.2)] rounded mt-7"
@@ -134,109 +154,117 @@ export default function Balance({ session }, props) {
       </div>
 
       {sideview && (
-        <div className="absolute left-0 top-0 flex px-2 flex-col h-full gap-px bg-[#080d1c] w-full">
-          <i
-            onClick={() => setSideview(false)}
-            className="bc-icon text-white before:content-['\e956'] -ml-2"
-          />
+        <>
+          <div className="absolute left-0 top-0 flex px-2 flex-col h-full gap-px bg-[rgba(8,13,28,0.5)] w-full"></div>
+          <motion.div
+            initial={{ x: "100%" }}
+            animate={{ x: "0%" }}
+            transition={{ type: "Inertia" }}
+            className="absolute left-0 top-0 flex px-2 flex-col h-full gap-px bg-[#080d1c] w-full"
+          >
+            <i
+              onClick={() => setSideview(false)}
+              className="bc-icon text-white before:content-['\e956'] -ml-2"
+            />
 
-          <div className="flex flex-col overflow-y-scroll">
-            <div className="flex items-top justify-center p-3 bg-[rgba(255,255,255,0.1)] mt-1.5 rounded w-full">
-              <div className="pr-3 mb-1 max-w-[90px] h-full flex justify-center items-center border-r border-r-[rgb(8,13,28)]">
-                <img
-                  className="w-full h-max"
-                  src="https://cmsbetconstruct.com/content/images/payments/custom/18750115/9812.png"
+            <div className="flex flex-col overflow-y-scroll">
+              <div className="flex items-top justify-center p-3 bg-[rgba(255,255,255,0.1)] mt-1.5 rounded w-full">
+                <div className="pr-3 mb-1 max-w-[90px] h-full flex justify-center items-center border-r border-r-[rgb(8,13,28)]">
+                  <img
+                    className="w-full h-max"
+                    src="https://cmsbetconstruct.com/content/images/payments/custom/18750115/9812.png"
+                  />
+                </div>
+
+                <div className="flex flex-col flex-1 pl-2">
+                  <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[12px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
+                    <span>Taxa: Grátis</span>
+                    <span className="opacity-50">0-12 Horas</span>
+                  </div>
+
+                  <div className="flex flex-col pt-2">
+                    <div className="flex justify-between text-[12px] text-[rgba(255,255,255,0.6)]">
+                      <span>Min</span>
+                      <span>Max</span>
+                    </div>
+
+                    <div className="flex justify-between text-[14px] text-[rgba(255,255,255)]">
+                      <span>50 R$</span>
+                      <span>10000 R$</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-top flex-col justify-center px-3 py-2.5 bg-[rgba(255,255,255,0.1)] mt-3 rounded w-full">
+                <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
+                  <span>Montante de retirada</span>
+                  <span className="text-[rgb(170,127,0)]">
+                    {(balance / 10000).toFixed(2)} R$
+                  </span>
+                </div>
+
+                <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] py-2 text-[rgba(255,255,255,0.6)] mb-auto">
+                  <span>Saldo</span>
+                  <span className="text-[rgb(16,145,33)]">
+                    {(balance / 10000).toFixed(2)} R$
+                  </span>
+                </div>
+
+                <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.6)] pt-2 mb-auto">
+                  <span>Montante não jogado</span>
+                  <span className="text-[rgb(170,127,0)]">0.00 R$</span>
+                </div>
+              </div>
+
+              <div class="relative mt-3">
+                <input
+                  type="text"
+                  id="floating_filled"
+                  class="block rounded p-3 pt-5 w-full text-sm text-gray-900 bg-[rgba(255,255,255,0.15)] appearance-none dark:text-white focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
                 />
+                <label
+                  for="floating_filled"
+                  class="absolute text-xs text-[rgba(255,255,255,0.5)] duration-300 transform -translate-y-3 top-4 z-10 origin-[0] left-3 peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-3"
+                >
+                  Transfer Pix
+                </label>
               </div>
 
-              <div className="flex flex-col flex-1 pl-2">
-                <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[12px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
-                  <span>Taxa: Grátis</span>
-                  <span className="opacity-50">0-12 Horas</span>
-                </div>
-
-                <div className="flex flex-col pt-2">
-                  <div className="flex justify-between text-[12px] text-[rgba(255,255,255,0.6)]">
-                    <span>Min</span>
-                    <span>Max</span>
-                  </div>
-
-                  <div className="flex justify-between text-[14px] text-[rgba(255,255,255)]">
-                    <span>50 R$</span>
-                    <span>10000 R$</span>
-                  </div>
-                </div>
+              <div class="relative mt-3">
+                <input
+                  onInput={(evt) => setWithdrawValue(evt.target.value)}
+                  type="text"
+                  id="floating_filled"
+                  class="block rounded p-3 pt-5 w-full text-sm text-gray-900 bg-[rgba(255,255,255,0.15)] appearance-none dark:text-white focus:outline-none focus:ring-0 focus:border-blue-600 peer"
+                  placeholder=" "
+                />
+                <label
+                  for="floating_filled"
+                  class="absolute text-xs text-[rgba(255,255,255,0.5)] duration-300 transform -translate-y-3 top-4 z-10 origin-[0] left-3 peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-3"
+                >
+                  Valor
+                </label>
               </div>
-            </div>
 
-            <div className="flex items-top flex-col justify-center px-3 py-2.5 bg-[rgba(255,255,255,0.1)] mt-3 rounded w-full">
-              <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] pb-2 text-[rgba(255,255,255,0.6)] mb-auto">
-                <span>Montante de retirada</span>
-                <span className="text-[rgb(170,127,0)]">
-                  {(balance / 10000).toFixed(2)} R$
+              <div className="flex flex-col mt-8">
+                <button
+                  className="px-5 py-2.5 text-xs text-white text-[10px] font-medium bg-[linear-gradient(to_bottom,_#4A94FD,_#1074D0)] rounded disabled:text-[rgba(255,255,255,0.5)]"
+                  onClick={() => submitWithdraw()}
+                  disabled={withdrawValue == ""}
+                >
+                  RETIRAR
+                </button>
+
+                <span className="text-[rgba(255,255,255,0.6)] text-[14px]">
+                  Para fazer uma retirada, por favor preencha todos os campos
+                  obrigatórios abaixo.
                 </span>
               </div>
-
-              <div className="flex justify-between border-b border-b-[rgb(8,13,28)] text-[14px] py-2 text-[rgba(255,255,255,0.6)] mb-auto">
-                <span>Saldo</span>
-                <span className="text-[rgb(16,145,33)]">
-                  {(balance / 10000).toFixed(2)} R$
-                </span>
-              </div>
-
-              <div className="flex justify-between text-[14px] text-[rgba(255,255,255,0.6)] pt-2 mb-auto">
-                <span>Montante não jogado</span>
-                <span className="text-[rgb(170,127,0)]">0.00 R$</span>
-              </div>
             </div>
-
-            <div class="relative mt-3">
-              <input
-                type="text"
-                id="floating_filled"
-                class="block rounded p-3 pt-5 w-full text-sm text-gray-900 bg-[rgba(255,255,255,0.15)] appearance-none dark:text-white focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-              />
-              <label
-                for="floating_filled"
-                class="absolute text-xs text-[rgba(255,255,255,0.5)] duration-300 transform -translate-y-3 top-4 z-10 origin-[0] left-3 peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-3"
-              >
-                Transfer Pix
-              </label>
-            </div>
-
-            <div class="relative mt-3">
-              <input
-                onInput={(evt) => setWithdrawValue(evt.target.value)}
-                type="text"
-                id="floating_filled"
-                class="block rounded p-3 pt-5 w-full text-sm text-gray-900 bg-[rgba(255,255,255,0.15)] appearance-none dark:text-white focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                placeholder=" "
-              />
-              <label
-                for="floating_filled"
-                class="absolute text-xs text-[rgba(255,255,255,0.5)] duration-300 transform -translate-y-3 top-4 z-10 origin-[0] left-3 peer-placeholder-shown:translate-y-0 peer-focus:-translate-y-3"
-              >
-                Valor
-              </label>
-            </div>
-
-            <div className="flex flex-col mt-8">
-              <button
-                className="px-5 py-2.5 text-xs text-white text-[10px] font-medium bg-[linear-gradient(to_bottom,_#4A94FD,_#1074D0)] rounded disabled:text-[rgba(255,255,255,0.5)]"
-                onClick={() => submitWithdraw()}
-                disabled={withdrawValue == ""}
-              >
-                RETIRAR
-              </button>
-
-              <span className="text-[rgba(255,255,255,0.6)] text-[14px]">
-                Para fazer uma retirada, por favor preencha todos os campos
-                obrigatórios abaixo.
-              </span>
-            </div>
-          </div>
-        </div>
+          </motion.div>
+        </>
       )}
     </>
   );

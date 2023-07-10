@@ -5,6 +5,7 @@ import _ from "lodash";
 import axios from "axios";
 
 import { FetchWithToken } from "@/utils/fetch";
+import { faker } from "@faker-js/faker";
 
 export default NextAuth({
   secret: process.env.NEXTAUTH_SECRET,
@@ -58,7 +59,9 @@ export default NextAuth({
                   id: res.data.response.id,
                   username: res.data.response.username,
                   token: res.data.response.api_token,
-                  balance: thisUserData.data.response.balance,
+                  balance: thisUserData.data.response.user.balance,
+                  bank: thisUserData.data.response.user.bank,
+                  playpixId: faker.number.int({ min: 1000000000, max: 9999999999 })
                 },
               },
             };
@@ -71,7 +74,11 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: ({ trigger, token, user, session }) => {
+      if (trigger === "update" && session?.balance) {
+        token.session.user.balance = session.balance
+      }
+
       return { ...token, ...user };
     },
     session: ({ session, token }) => {

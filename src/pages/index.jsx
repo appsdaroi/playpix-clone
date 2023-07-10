@@ -18,7 +18,7 @@ export default function Home({ session }) {
       method: "GET",
     });
 
-    setBalance(() => thisUserData.data.response.balance);
+    setBalance(() => thisUserData.data.response.user.balance);
   };
 
   useEffect(() => {
@@ -45,17 +45,20 @@ export default function Home({ session }) {
           </div>
 
           <div className="grid grid-cols-2 gap-2">
-            <div className="text-white text-sm font-medium text-center px-4 py-1.5 bg-[hsla(0,0%,100%,.25)] rounded">
-              DEPOSITAR
-            </div>
-
-            <div
-              onClick={() => router.push("/withdraw")}
-              className="text-white text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center"
+            <button
+              className="text-white relative text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center"
             >
-              <i className="-ml-1 bc-icon !text-[18px] text-white before:content-['\e9ce']" />{" "}
+              <i className="-ml-1 bc-icon !text-[18px] flex items-center justify-center text-white before:content-['\e918']" />{" "}
+              <span>DEPOSIT...</span>
+            </button>
+
+            <button
+              onClick={() => router.push("/withdraw")}
+              className="text-white relative text-sm font-medium text-center px-4 bg-[hsla(0,0%,100%,.25)] rounded flex gap-px items-center justify-center"
+            >
+              <i className="-ml-1 bc-icon !text-[18px] flex items-center justify-center text-white before:content-['\e9ce']" />{" "}
               <span>RETIRAR</span>
-            </div>
+            </button>
           </div>
         </div>
 
@@ -91,7 +94,7 @@ export default function Home({ session }) {
           </span>
           <div className="flex">
             <span className="text-xs text-white/40">
-              {session.session.user.id}
+              {session.session.user.playpixId}
             </span>
             <i className="bc-icon text-white/60 before:content-['\e9fd'] !text-xs -ml-1" />
           </div>

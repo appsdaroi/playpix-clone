@@ -1,14 +1,7 @@
 import { Montserrat } from "next/font/google";
 import { useSession, getSession } from "next-auth/react";
 
-import { useState, useEffect, cloneElement } from "react";
-import { FetchWithToken } from "@/utils/fetch";
-
-const montserrat = Montserrat({ subsets: ["latin"] });
-
 const Layout = ({ children }) => {
-  const { data: session } = useSession();
-
   return (
     <div className="flex flex-col h-screen">
       <nav className="bg-[#080d1c] h-[60px] border-b border-b-[rgba(255,255,255,0.05)] pt-8 pb-[2.1rem]">
@@ -31,7 +24,7 @@ const Layout = ({ children }) => {
       </nav>
 
       <main
-        className={`${montserrat.className} flex-1 bg-[#080d1c] px-2 h-full relative`}
+        className={`flex-1 bg-[#080d1c] px-2 h-full relative`}
       >
         {children}
       </main>
